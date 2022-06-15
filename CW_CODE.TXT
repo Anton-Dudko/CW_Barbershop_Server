@@ -1,0 +1,315 @@
+package socket_server;
+
+import dialog_creator.Dialog_Main;
+import simple_data.System_Datadown;
+
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
+
+
+public class Server_TCP extends Thread{
+
+    public ArrayList<Server_TCP_Starter> clientSockets = new ArrayList<>();
+    private ServerSocket serverSocket = null;
+    public int count = 0;
+    private int port;
+    public String lastError = "";
+    public Dialog_Main dialog;
+
+    public Server_TCP(int port, String logFile, Dialog_Main dialog) {
+        this.port = port;
+        this.dialog = dialog;
+        System.setProperty("my.log", "C:\\electrical_shop\\" + logFile);
+        start();
+    }
+
+    public void run(){
+        try {
+            System_Datadown.logger.info("Сервер запущен");
+            serverSocket = new ServerSocket(port);
+            while(true) {
+                Socket tempSocket = serverSocket.accept();
+                ObjectInputStream nois = new ObjectInputStream(tempSocket.getInputStream());
+                ObjectOutputStream noos = new ObjectOutputStream(tempSocket.getOutputStream());
+
+                if(!nois.readObject().toString().equals("BREAK")){
+                    clientSockets.add(new Server_TCP_Starter(tempSocket, count, this, nois, noos));
+                } else {
+                    serverSocket.close();
+                    break;
+                }
+                dialog.textFields.get(1).setText(++count + " шт.");
+                System_Datadown.logger.info("Подключился клиент: #" + (count-1) );
+            }
+        } catch (Exception e) {
+            lastError = "Ошибка сокета: \"" + e.getMessage() + "\"";
+            System_Datadown.logger.error("Ошибка сокета: \"" + e.getMessage() + "\"");
+        }
+    }
+
+    public void exitServer() {
+        try {
+
+            for (int i = 0; i < clientSockets.size(); i++) {
+                clientSockets.get(i).exit();
+            }
+            System_Datadown.logger.info("Сервер завершил работу корректно");
+        } catch (Exception e) {
+            lastError = "Ошибка сокета: \"" + e.getMessage() + "\"";
+            System_Datadown.logger.error("Сервер завершил с ошибкой сокета: \"" + e.getMessage() + "\"");
+        }
+        Hook_Stop hookStop = new Hook_Stop();
+        interrupt();
+    }
+
+
+}
+
+
+package entity;
+
+public class SalonIEntity implements IEntity {
+    public final static String[] COLUMNS = {"name", "address"};
+    public final static String[] COLUMNS_BY_RUS = {"ИД", "Название", "Метоположение"};
+    public final static boolean[] IS_STR = {true, true};
+
+    private int id;
+    private String name;
+    private String address;
+
+    public String[] getConstColumnsRus(){return COLUMNS_BY_RUS;}
+    public String[] getConstColumns(){return COLUMNS;}
+    public boolean[] getConstIsSTR(){return IS_STR;}
+
+    public SalonIEntity(int id, String name, String address){
+        this.id = id;
+        this.name = name;
+        this.address = address;
+    }
+
+    public SalonIEntity(){}
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+}
+
+
+package dialog_action;
+
+import dialog_creator.Dialog_Main;
+import socket_server.Server_TCP;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+
+public class Server_Runner {
+    private Dialog_Main dialogMain;
+    private Dialog_Main mainDialog;
+    private int port;
+    private String logFile;
+    private Server_TCP runner;
+
+
+    public Server_Runner(int port, String logFile, String configFile, Dialog_Main dialogMain){
+        this.dialogMain = dialogMain;
+        this.port = port;
+        this.logFile = logFile;
+        mainDialog = new Dialog_Main("Обработка Барбершопа Style", 500, 270);
+        prepareMainDialog();
+        prepareItems(port, logFile, configFile);
+        setEventForButtons();
+        setEventForWindow();
+        mainDialog.setVisible(true);
+    }
+
+    private void prepareMainDialog(){
+        mainDialog.addLabel(400, 30,50, 20, "Настройки:");
+        mainDialog.addTextField(400, 30,50, 50);
+        mainDialog.addLabel(400, 30,50, 100, "Клиенты:");
+        mainDialog.addTextField(400, 30,50, 130);
+        mainDialog.addButton(400, 30, 50, 180, "Остановить");
+    }
+
+    private void prepareItems(int port, String logFile, String configFile){
+        mainDialog.textFields.get(0).setEnabled(false);
+        mainDialog.textFields.get(0).setText("Порт: " + port + " Лог: \"" + logFile + "\" Настройки: \"" + configFile +  "\"");
+        mainDialog.textFields.get(1).setEnabled(false);
+        mainDialog.textFields.get(1).setText("0 шт.");
+    }
+
+    private void setEventForButtons(){
+        ActionListener actionListener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                runner.exitServer();
+                if(!runner.lastError.equals("")){
+                    JOptionPane.showMessageDialog(mainDialog, runner.lastError, "Ошибка!",JOptionPane.PLAIN_MESSAGE);
+                }
+                dialogMain.setVisible(true);
+                mainDialog.dispose();
+            }
+        };
+        mainDialog.buttons.get(0).addActionListener(actionListener);
+    }
+
+    private void setEventForWindow(){
+        WindowListener windowListener = new WindowListener() {
+            public void windowActivated(WindowEvent event) {}
+            public void windowClosed(WindowEvent event) {}
+            public void windowDeactivated(WindowEvent event) {}
+            public void windowDeiconified(WindowEvent event) {}
+            public void windowIconified(WindowEvent event) {}
+            public void windowOpened(WindowEvent event) {
+                runner = new Server_TCP(port, logFile, mainDialog);
+                if(!runner.lastError.equals("")){
+                    JOptionPane.showMessageDialog(mainDialog, runner.lastError, "Ошибка!",JOptionPane.PLAIN_MESSAGE);
+                    mainDialog.dispose();
+                }
+            }
+            public void windowClosing(WindowEvent event) {
+                runner.exitServer();
+                if(!runner.lastError.equals("")){
+                    JOptionPane.showMessageDialog(mainDialog, runner.lastError, "Ошибка!",JOptionPane.PLAIN_MESSAGE);
+                }
+            }
+        };
+        mainDialog.addWindowListener(windowListener);
+    }
+
+    public Dialog_Main getMainDialog() {
+        return mainDialog;
+    }
+
+    public static void setCountForDialog(Dialog_Main dialog, int count){
+        dialog.textFields.get(2).setText(count + " шт.");
+
+    }
+
+    public static void showErrorMessage(Dialog_Main dialog, String message){
+        JOptionPane.showMessageDialog(dialog, message, "Ошибка!",JOptionPane.PLAIN_MESSAGE);
+    }
+
+}
+package simple_data;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class Valid_Session {
+    public static boolean isHaveOnlyGoodChars(String data){
+        if (data.equals("")) return true;
+        Pattern pattern = Pattern.compile("[^(A-Za-z0-9)]");
+        Matcher matcher = pattern.matcher(data);
+        if(matcher.find()){
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public static boolean isDate(String data){
+        Pattern pattern = Pattern.compile("201[3-8]{1}-(0[1-9]|1[012])-(0[1-9]|1[0-9]|2[0-9]|3[01])");
+        Matcher matcher = pattern.matcher(data);
+        if(!matcher.find( )){
+            return false;
+        } else  {
+            return true;
+        }
+    }
+
+    public static boolean isEMail(String data){
+        if (data.equals("")) return false;
+        Pattern pattern = Pattern.compile("[A-Za-z0-9]{3,30}@[A-Za-z0-9]{2,10}\\.[A-Za-z0-9]{2,5}");
+        Matcher matcher = pattern.matcher(data);
+        if(matcher.find()){
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean isInt(String string){
+        try {
+            Integer.valueOf(string);
+            return true;
+        } catch (Exception e){
+            return false;
+        }
+    }
+
+    public static boolean isDouble(String string){
+        try {
+            Double.valueOf(string);
+            return true;
+        } catch (Exception e){
+            return false;
+        }
+    }
+
+    public static boolean isTXT(String data){
+        if (data.equals("")) return false;
+        Pattern pattern = Pattern.compile("[A-Za-z0-9_]{1,30}\\.txt");
+        Matcher matcher = pattern.matcher(data);
+        return matcher.find() ? true : false;
+    }
+
+    public static boolean isLOG(String data){
+        if (data.equals("")) return false;
+        Pattern pattern = Pattern.compile("[A-Za-z0-9_]{1,30}\\.log");
+        Matcher matcher = pattern.matcher(data);
+        return matcher.find() ? true : false;
+    }
+
+    public static boolean isPort(String string){
+        try {
+            int port = Integer.valueOf(string);
+            return (port <= 1024 || port > 65535) ? false : true;
+        } catch (Exception e){
+            return false;
+        }
+    }
+
+
+    private static final String IP_ADDRESS_PATTERN
+            = "^([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
+            + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
+            + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])\\."
+            + "([01]?\\d\\d?|2[0-4]\\d|25[0-5])$";
+
+    public static boolean isHost(String string){
+        Pattern pattern = Pattern.compile(IP_ADDRESS_PATTERN);
+        Matcher matcher = pattern.matcher(string);
+        if(!matcher.find( )){
+            return false;
+        } else  {
+            return true;
+        }
+    }
+}

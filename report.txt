@@ -1,0 +1,274 @@
+Constructor to be renamed to UserIEntity, Class to be renamed to PurchaseIEntity, Constructor to be renamed to PurchaseIEntity, Class to be renamed to MasterIEntity, Class to be renamed to HaircutIEntity, Interface to be renamed to IEntity, Class to be renamed to SalonIEntity, Parameter to be renamed to IEntity, Constructor to be renamed to SalonIEntity, Constructor to be renamed to CategoryIEntity, Class to be renamed to TransferIEntity, Class to be renamed to CategoryIEntity, Class to be renamed to ModeratorIEntity, Variable to be renamed to currentIEntities, Variable to be renamed to IEntities, Constructor to be renamed to HaircutIEntity, Class to be renamed to UserIEntity, Constructor to be renamed to TransferIEntity, Constructor to be renamed to ModeratorIEntity, Constructor to be renamed to MasterIEntity
+    Model
+    UserModel
+    PurchaseModel
+    SalonModel
+    ModeratorModel
+    CategoryModel
+    TransferModel
+    MasterModel
+    HaircutModel
+    model
+    currentModels
+    models
+    models
+    models
+    models
+    models
+    models
+    models
+    models
+    model
+    model
+    model
+    model
+    model
+    model
+    model
+    model
+    model
+    model
+    model
+    model
+    model
+    model
+    model
+    UserModel(int, String, String, int)
+    UserModel()
+    PurchaseModel(int, String, String, String, int, int)
+    PurchaseModel()
+    SalonModel(int, String, String)
+    SalonModel()
+    ModeratorModel(int, int, String, int, String)
+    ModeratorModel()
+    CategoryModel(int, String, int)
+    CategoryModel(int, String)
+    CategoryModel()
+    TransferModel(int, int, String, int, String)
+    TransferModel()
+    MasterModel(int, String, String, String)
+    MasterModel()
+    HaircutModel(int, String, String, double, int, String, int, ...)
+    HaircutModel()
+References in code to constructor UserModel(), constructor HaircutModel(int, String, String, double, int, String, int, ...), constructor UserModel(int, String, String, int), constructor MasterModel(int, String, String, String), class model.CategoryModel, class model.PurchaseModel, constructor MasterModel(), constructor PurchaseModel(), parameter model, constructor HaircutModel(), interface model.Model, constructor CategoryModel(), constructor TransferModel(), class model.UserModel, constructor TransferModel(int, int, String, int, String), constructor ModeratorModel(), class model.TransferModel, variable models, constructor SalonModel(int, String, String), class model.MasterModel, class model.ModeratorModel, constructor SalonModel(), class model.HaircutModel, constructor CategoryModel(int, String, int), class model.SalonModel, variable currentModels, constructor CategoryModel(int, String), constructor PurchaseModel(int, String, String, String, int, int), constructor ModeratorModel(int, int, String, int, String) (280 references in 14 files)  (188 usages found)
+    CategoryModel.java  (1 usage found)
+        3 public class CategoryModel implements Model{
+    ConnectorToDB.java  (23 usages found)
+        108 public ArrayList<Model> select(String table , String where, String orderBy, String param, String isInt) {
+        121 ArrayList<Model> categorys = new ArrayList<>();
+        130 public ArrayList<Model> selectByQuery(String query, String table, String param, String isInt) {
+        138 ArrayList<Model> currentModels = new ArrayList<>();
+        142 currentModels.add(resToModel(resultSet, table));
+        144 return currentModels;
+        151 private Model resToModel(ResultSet resultSet, String table){
+        169 private CategoryModel resToCategoryModel(ResultSet resultSet) throws Exception  {
+        170 CategoryModel category = new CategoryModel(
+        178 private HaircutModel resToHaircutModel(ResultSet resultSet) throws Exception  {
+        179 HaircutModel haircut = new HaircutModel(
+        192 private PurchaseModel resToPurchaseModel(ResultSet resultSet) throws Exception  {
+        193 PurchaseModel purchase = new PurchaseModel(
+        204 private MasterModel resToMasterModel(ResultSet resultSet) throws Exception  {
+        205 MasterModel master = new MasterModel(
+        214 private UserModel resToUserModel(ResultSet resultSet) throws Exception  {
+        215 UserModel user = new UserModel(
+        224 private SalonModel resToSalonModel(ResultSet resultSet) throws Exception  {
+        225 SalonModel salon = new SalonModel(
+        233 private TransferModel resToMasterHaircutModel(ResultSet resultSet) throws Exception  {
+        234 TransferModel masterHaircut = new TransferModel(
+        244 private ModeratorModel restToUserCategory(ResultSet resultSet) throws Exception  {
+        245 ModeratorModel userCategory = new ModeratorModel(
+    FieldsTransformation.java  (26 usages found)
+        8 public String[] newData(Model model){
+        9 switch (model.getClass().getName()){
+        10 case "model.CategoryModel":               return newDataCategory(model);
+        11 case "model.HaircutModel":                return newDataHaircut(model);
+        12 case "model.PurchaseModel":               return newDataPurchase(model);
+        13 case "model.MasterModel":               return newDataMaster(model);
+        14 case "model.UserModel":                   return newDataUser(model);
+        15 default: case "model.SalonModel":     return newDataSalon(model);
+        16 case "model.TransferModel":        return newDataMasterHaircut(model);
+        17 case "model.ModeratorModel":           return newDataUserCategory(model);
+        21 private String[] newDataCategory(Model model){
+        22 CategoryModel category = (CategoryModel)model;
+        32 private String[] newDataHaircut(Model model){
+        33 HaircutModel haircut = (HaircutModel)model;
+        46 private String[] newDataPurchase(Model model){
+        47 PurchaseModel purchase = (PurchaseModel)model;
+        58 private String[] newDataMaster(Model model){
+        59 MasterModel master = (MasterModel)model;
+        68 private String[] newDataUser(Model model){
+        69 UserModel user = (UserModel)model;
+        78 private String[] newDataSalon(Model model){
+        79 SalonModel salon = (SalonModel)model;
+        87 private String[] newDataMasterHaircut(Model model){
+        88 TransferModel masterHaircut = (TransferModel)model;
+        96 private String[] newDataUserCategory(Model model){
+        97 ModeratorModel userCategory = (ModeratorModel)model;
+    ModeratorModel.java  (1 usage found)
+        3 public class ModeratorModel implements Model {
+    OrderPerformer.java  (8 usages found)
+        15 UserModel user = (UserModel) Serrializator.JSONToObject(data, UserModel.class);
+        16 ArrayList<UserModel> users = queryer.getAllUsers("", "`login` = ?", user.getLogin(), "false");
+        21 private static String userSeaech(ArrayList<UserModel> users, UserModel user){
+        23 UserModel iUser = users.get(i);
+        32 public static String getAll(String orderByAndWhere, Class<? extends Model> currentClass){
+        43 private static String getAnswerFromBD(String params[], Class<? extends Model> currentClass){
+        65 public static String insert(String data, String table, Class<? extends Model> modelType){
+        70 public static String update(String data, String table, Class<? extends Model> modelType){
+    HaircutModel.java  (1 usage found)
+        3 public class HaircutModel implements Model {
+    PurchaseModel.java  (1 usage found)
+        3 public class PurchaseModel implements Model {
+    QueryerToDB.java  (93 usages found)
+        11 public ArrayList<CategoryModel> getAllCategorys(String orderBy, String where, String param, String isInt){
+        13 ArrayList<Model> models;
+        14 ArrayList<CategoryModel>  categorys = new ArrayList<>();
+        15 models = connector.select("categorys", where, orderBy, param, isInt);
+        17 for (int i = 0; i < models.size(); i++)
+        18 categorys.add((CategoryModel) models.get(i));
+        26 public ArrayList<HaircutModel> getAllHaircuts(String orderBy, String where, String param, String isInt){
+        28 ArrayList<Model> models;
+        29 ArrayList<HaircutModel>  haircuts = new ArrayList<>();
+        30 models = connector.select("haircuts", where, orderBy, param, isInt);
+        31 for (int i = 0; i < models.size(); i++)
+        32 haircuts.add((HaircutModel) models.get(i));
+        42 public ArrayList<MasterModel> getAllMasters(String orderBy, String where, String param, String isInt){
+        44 ArrayList<Model> models;
+        45 ArrayList<MasterModel>  masters = new ArrayList<>();
+        46 models = connector.select("masters", where, orderBy, param, isInt);
+        47 for (int i = 0; i < models.size(); i++)
+        48 masters.add((MasterModel) models.get(i));
+        56 public ArrayList<PurchaseModel> getAllPurchases(String orderBy, String where, String param, String isInt){
+        58 ArrayList<Model> models;
+        59 ArrayList<PurchaseModel>  purchases = new ArrayList<>();
+        60 models = connector.select("purchases", where, orderBy, param, isInt);
+        61 for (int i = 0; i < models.size(); i++)
+        62 purchases.add((PurchaseModel) models.get(i));
+        71 public ArrayList<UserModel> getAllUsers(String orderBy, String where, String param, String isInt){
+        73 ArrayList<Model> models;
+        74 ArrayList<UserModel>  users = new ArrayList<>();
+        75 models = connector.select("users", where, orderBy, param, isInt);
+        77 for (int i = 0; i < models.size(); i++)
+        78 users.add((UserModel) models.get(i));
+        87 public ArrayList<SalonModel> getAllSalons(String orderBy, String where, String param, String isInt){
+        89 ArrayList<Model> models;
+        90 ArrayList<SalonModel>  salons = new ArrayList<>();
+        91 models = connector.select("salons", where, orderBy, param, isInt);
+        92 for (int i = 0; i < models.size(); i++)
+        93 salons.add((SalonModel) models.get(i));
+        101 public ArrayList<TransferModel> getMasterHaircuts(String where, String param, String isInt){
+        103 ArrayList<Model> models;
+        104 ArrayList<TransferModel>  masterHaircuts = new ArrayList<>();
+        110 models = connector.selectByQuery(query, "transfers", param, isInt);
+        111 for (int i = 0; i < models.size(); i++)
+        112 masterHaircuts.add((TransferModel) models.get(i));
+        120 public ArrayList<ModeratorModel> getUserCategorys(String where, String param, String isInt){
+        122 ArrayList<Model> models;
+        123 ArrayList<ModeratorModel>  userCategorys = new ArrayList<>();
+        130 models = connector.selectByQuery(query, "moderators", param, isInt);
+        131 for (int i = 0; i < models.size(); i++)
+        132 userCategorys.add((ModeratorModel) models.get(i));
+        156 public boolean insert(Model model, String table) {
+        160 String values = prepareQueryComponents(model);
+        161 String columns = prepareQueryColumns(model);
+        162 String[] valueByQuery = transformator.newData(model);
+        164 if (connector.insert(table, columns, values, valueByQuery, isStrCurrent(model))) {
+        177 private String prepareQueryComponents(Model model){
+        178 if(model instanceof CategoryModel)  return "?,?";
+        179 if(model instanceof HaircutModel)   return "?,?,?,?,?,?,?";
+        180 if(model instanceof PurchaseModel)  return "?,?,?,?,?";
+        181 if(model instanceof MasterModel)  return "?,?,?";
+        182 if(model instanceof UserModel)      return "?,?,?";
+        183 if(model instanceof SalonModel) return "?,?";
+        184 if(model instanceof TransferModel)   return "?,?";
+        185 if(model instanceof ModeratorModel)      return "?,?";
+        189 private String prepareQueryColumns(Model model){
+        190 if(model instanceof CategoryModel)  return prepareColumns(CategoryModel.COLUMNS);
+        191 if(model instanceof HaircutModel)   return prepareColumns(HaircutModel.COLUMNS);
+        192 if(model instanceof PurchaseModel)  return prepareColumns(PurchaseModel.COLUMNS);
+        193 if(model instanceof MasterModel)  return prepareColumns(MasterModel.COLUMNS);
+        194 if(model instanceof UserModel)      return prepareColumns(UserModel.COLUMNS);
+        195 if(model instanceof SalonModel) return prepareColumns(SalonModel.COLUMNS);
+        196 if(model instanceof TransferModel)   return prepareColumns(TransferModel.COLUMNS_ABSOLUTE);
+        197 if(model instanceof ModeratorModel)      return prepareColumns(ModeratorModel.COLUMNS_ABSOLUTE);
+        201 private boolean[] isStrCurrent(Model model){
+        202 if(model instanceof CategoryModel)  return CategoryModel.IS_STR;
+        203 if(model instanceof HaircutModel)   return HaircutModel.IS_STR;
+        204 if(model instanceof PurchaseModel)  return PurchaseModel.IS_STR;
+        205 if(model instanceof MasterModel)  return MasterModel.IS_STR;
+        206 if(model instanceof UserModel)      return UserModel.IS_STR;
+        207 if(model instanceof SalonModel) return SalonModel.IS_STR;
+        208 if(model instanceof TransferModel)   return TransferModel.IS_STR_ABSOLUTE;
+        209 if(model instanceof ModeratorModel)      return ModeratorModel.IS_STR_ABSOLUTE;
+        223 public boolean update(Model model, String table, int id) {
+        227 String[] valueByQuery = transformator.newData(model);
+        229 String values = prepareQueryValue(model);
+        230 if (connector.update(table, id, values, valueByQuery, isStrCurrent(model))) {
+        243 private String prepareQueryValue(Model model){
+        245 if(model instanceof CategoryModel){
+        248 if(model instanceof HaircutModel){
+        251 if(model instanceof PurchaseModel){
+        254 if(model instanceof MasterModel){
+        257 if(model instanceof UserModel){
+        260 if(model instanceof SalonModel){
+        263 if(model instanceof TransferModel){
+        266 if(model instanceof ModeratorModel){
+    Serrializator.java  (6 usages found)
+        5 import model.Model;
+        14 public static String ObjectToJSON(Model model) {
+        15 return gson.toJson(model);
+        18 public static Model JSONToObject(String string, Class<? extends Model> modelType) {
+        22 public static String ObjectsToJSON(ArrayList<? extends Model> models) {
+        27 public static ArrayList<Model> JSONToObjects(String string, Type type) {
+    ServerSocketConnector.java  (24 usages found)
+        71 case "getCategorys": return OrderPerformer.getAll(data, CategoryModel.class);
+        72 case "getHaircuts": return OrderPerformer.getAll(data, HaircutModel.class);
+        73 case "getPurchases": return OrderPerformer.getAll(data, PurchaseModel.class);
+        74 case "getMasters": return OrderPerformer.getAll(data, MasterModel.class);
+        75 case "getUsers": return OrderPerformer.getAll(data, UserModel.class);
+        76 case "getSalons": return OrderPerformer.getAll(data, SalonModel.class);
+        77 case "getMastersHaircuts": return OrderPerformer.getAll(data, TransferModel.class);
+        78 case "getUserCategorys": return OrderPerformer.getAll(data, ModeratorModel.class);
+        80 case "insert_categorys": return OrderPerformer.insert(data, "categorys", CategoryModel.class);
+        81 case "insert_haircuts": return OrderPerformer.insert(data, "haircuts", HaircutModel.class);
+        82 case "insert_purchases": return OrderPerformer.insert(data, "purchases", PurchaseModel.class);
+        83 case "insert_masters": return OrderPerformer.insert(data, "masters", MasterModel.class);
+        84 case "insert_users": return OrderPerformer.insert(data, "users", UserModel.class);
+        85 case "insert_salons": return OrderPerformer.insert(data, "salons", SalonModel.class);
+        86 case "insert_transfers": return OrderPerformer.insert(data, "transfers", TransferModel.class);
+        87 case "insert_moderators": return OrderPerformer.insert(data, "moderators", ModeratorModel.class);
+        88 case "update_categorys": return OrderPerformer.update(data, "categorys", CategoryModel.class);
+        89 case "update_haircuts": return OrderPerformer.update(data, "haircuts", HaircutModel.class);
+        90 case "update_purchases": return OrderPerformer.update(data, "purchases", PurchaseModel.class);
+        91 case "update_masters": return OrderPerformer.update(data, "masters", MasterModel.class);
+        92 case "update_users": return OrderPerformer.update(data, "users", UserModel.class);
+        93 case "update_salons": return OrderPerformer.update(data, "salons", SalonModel.class);
+        94 case "update_transfers": return OrderPerformer.update(data, "transfers", TransferModel.class);
+        95 case "update_moderators": return OrderPerformer.update(data, "moderators", ModeratorModel.class);
+    MasterModel.java  (1 usage found)
+        3 public class MasterModel implements Model {
+    TransferModel.java  (1 usage found)
+        3 public class TransferModel implements Model {
+    UserModel.java  (1 usage found)
+        3 public class UserModel implements Model {
+    SalonModel.java  (1 usage found)
+        3 public class SalonModel implements Model {
+Occurrences found in comments, strings and non-code files  (24 occurrences in 2 files)  (16 usages found)
+    FieldsTransformation.java  (8 usages found)
+        10 case "model.CategoryModel":               return newDataCategory(model);
+        11 case "model.HaircutModel":                return newDataHaircut(model);
+        12 case "model.PurchaseModel":               return newDataPurchase(model);
+        13 case "model.MasterModel":               return newDataMaster(model);
+        14 case "model.UserModel":                   return newDataUser(model);
+        15 default: case "model.SalonModel":     return newDataSalon(model);
+        16 case "model.TransferModel":        return newDataMasterHaircut(model);
+        17 case "model.ModeratorModel":           return newDataUserCategory(model);
+    OrderPerformer.java  (8 usages found)
+        46 case "model.CategoryModel":     return Serrializator.ObjectsToJSON(queryer.getAllCategorys(params[0], params[1], params[2], params[3]));
+        47 case "model.HaircutModel":      return Serrializator.ObjectsToJSON(queryer.getAllHaircuts(params[0], params[1], params[2], params[3]));
+        48 case "model.PurchaseModel":     return Serrializator.ObjectsToJSON(queryer.getAllPurchases(params[0], params[1] , params[2], params[3]));
+        49 case "model.MasterModel":     return Serrializator.ObjectsToJSON(queryer.getAllMasters(params[0], params[1] , params[2], params[3]));
+        50 case "model.UserModel":         return Serrializator.ObjectsToJSON(queryer.getAllUsers(params[0], params[1], params[2], params[3]));
+        51 case "model.SalonModel":    return Serrializator.ObjectsToJSON(queryer.getAllSalons(params[0], params[1], params[2], params[3]));
+        52 case "model.TransferModel":      return Serrializator.ObjectsToJSON(queryer.getMasterHaircuts(params[1], params[2], params[3]));
+        53 case "model.ModeratorModel":         return Serrializator.ObjectsToJSON(queryer.getUserCategorys(params[1], params[2], params[3]));
